@@ -1,0 +1,33 @@
+these are the api's
+DEX Screener API reference
+
+Get the latest token profiles (rate-limit 60 requests per minute)
+GEThttps://api.dexscreener.com/token-profiles/latest/v1
+
+Get the latest boosted tokens (rate-limit 60 requests per minute)
+GEThttps://api.dexscreener.com/token-boosts/latest/v1
+
+
+Get the tokens with most active boosts (rate-limit 60 requests per minute)
+GEThttps://api.dexscreener.com/token-boosts/top/v1
+
+Check orders paid for of token (rate-limit 60 requests per minute)
+GEThttps://api.dexscreener.com/orders/v1/{chainId}/{tokenAddress}
+
+Get one or multiple pairs by chain and pair address (rate-limit 300 requests per minute)
+GEThttps://api.dexscreener.com/latest/dex/pairs/{chainId}/{pairId}
+
+
+Search for pairs matching query (rate-limit 300 requests per minute)
+GEThttps://api.dexscreener.com/latest/dex/search
+
+
+Get the pools of a given token address (rate-limit 300 requests per minute)
+GEThttps://api.dexscreener.com/token-pairs/v1/{chainId}/{tokenAddress}
+
+
+Get one or multiple pairs by token address (rate-limit 300 requests per minute)
+GEThttps://api.dexscreener.com/tokens/v1/{chainId}/{tokenAddresses}
+
+
+theseare the api's i got from dexesceer
