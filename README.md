@@ -22,4 +22,3 @@
 - **Scoring and Ranking**
   - Computes a comprehensive score for each token to prioritize investments based on multiple criteria.
 <!-- updated: 2025-12-16-r01 -->
-
