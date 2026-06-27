@@ -138,7 +138,7 @@ def compute_token_score(volume_24h, liquidity_usd, tx_count, top_holder_pct, his
             + (WEIGHT_VOLUME   * volume_24h)
             + (WEIGHT_TX_COUNT * tx_count)
             - (WEIGHT_HOLDER_DISTRIB * top_holder_pct if we consider big whales negative)
-    
+
     Then you can adjust the result based on historical trends (volume or liquidity growth, etc.).
     """
     base_score = (
@@ -153,7 +153,7 @@ def compute_token_score(volume_24h, liquidity_usd, tx_count, top_holder_pct, his
         # Example: if liquidity or volume is trending up, add a small bonus
         bonus = compute_historical_bonus(historical_data)
         base_score += bonus
-    
+
     return base_score
 
 def compute_historical_bonus(historical_data):
@@ -189,24 +189,24 @@ def advanced_filter_solana_tokens():
     print(f"Found {len(solana_profiles)} Solana token profiles.")
 
     valid_tokens = []
-    
+
     for profile in solana_profiles:
         token_address = profile.get("tokenAddress", "")
         if not token_address:
             continue
-        
+
         pairs = fetch_pairs_for_token(token_address)
         if not pairs:
             # No pair data => skip
             continue
-        
+
         # We'll assume we only need to evaluate the "primary" or first pair
         # or you can combine the logic (e.g., pick the pair with highest volume).
         best_pair = max(pairs, key=lambda p: p.get("volume", {}).get("h24", 0))
-        
+
         volume_24h = best_pair.get("volume", {}).get("h24", 0)
         liquidity_usd = best_pair.get("liquidity", {}).get("usd", 0)
-        
+
         # BASIC THRESHOLD CHECKS
         if liquidity_usd < MIN_LIQUIDITY_USD:
             continue  # fails liquidity
@@ -214,7 +214,7 @@ def advanced_filter_solana_tokens():
         tx_count_24h = fetch_transaction_count(token_address)
         if tx_count_24h < MIN_TX_COUNT_24H:
             continue  # fails tx count
-        
+
         # DISTRIBUTION & LIQUIDITY LOCK
         holder_info = fetch_holder_distribution(token_address)
         top_holders = holder_info.get("topHolders", [])
@@ -224,11 +224,11 @@ def advanced_filter_solana_tokens():
                 continue  # fails top-holder distribution
         else:
             max_holder_pct = 0
-        
+
         # liquidity lock
         if REQUIRED_LIQUIDITY_LOCK and not check_liquidity_lock(token_address):
             continue  # fails liquidity lock
-        
+
         # H ISTORICAL DATA & SCORING
         historical_data = fetch_historical_data(token_address)
         score = compute_token_score(volume_24h, liquidity_usd, tx_count_24h, max_holder_pct, historical_data)
@@ -242,7 +242,7 @@ def advanced_filter_solana_tokens():
                 "tx_count_24h": tx_count_24h,
                 "top_holder_pct": max_holder_pct
             })
-    
+
     # Sort final tokens by descending score
     valid_tokens.sort(key=lambda x: x["score"], reverse=True)
 
