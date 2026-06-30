@@ -24,16 +24,16 @@ def fetch_solana_token_profiles():
     try:
         response = requests.get(TOKEN_PROFILES_URL, timeout=10)
         response.raise_for_status()
-        
+
         # Dexscreener returns a list of token profile objects (for multiple chains).
         all_profiles = response.json()
-        
+
         # Filter out only the Solana profiles:
         solana_profiles = [profile for profile in all_profiles if profile.get("chainId") == "solana"]
-        
+
         print(f"Total token profiles returned (all chains): {len(all_profiles)}")
         print(f"Total Solana-specific profiles: {len(solana_profiles)}\n")
-        
+
         return solana_profiles
 
     except requests.exceptions.RequestException as e:
@@ -45,7 +45,7 @@ def fetch_token_pairs_for_solana_token(token_address):
     """
     Retrieves pool/pair data for a given Solana token address.
     This data typically includes volume, liquidity, etc.
-    
+
     Endpoint:
       GET https://api.dexscreener.com/token-pairs/v1/solana/{tokenAddress}
     """
@@ -96,24 +96,24 @@ def filter_solana_coins():
     solana_profiles = fetch_solana_token_profiles()
 
     valid_tokens = []
-    
+
     for idx, profile in enumerate(solana_profiles, start=1):
         token_address = profile.get("tokenAddress", "N/A")
         token_name_url = profile.get("url", "Unknown URL")
-        
+
         # Retrieve all pairs for this token.
         pairs_data = fetch_token_pairs_for_solana_token(token_address)
-        
+
         # Check if *any* of the token's pairs meets the criteria:
         if any(passes_filter_criteria(pair) for pair in pairs_data):
             valid_tokens.append(profile)
-    
+
     # Print or return the valid tokens
     print(f"\n=== FILTER RESULTS ===")
     if not valid_tokens:
         print("No Solana tokens passed the filter criteria.")
         return
-    
+
     print(f"{len(valid_tokens)} Solana tokens passed the filter criteria:")
     for idx, vtoken in enumerate(valid_tokens, start=1):
         print(f"{idx}. Token Address: {vtoken.get('tokenAddress')}")
