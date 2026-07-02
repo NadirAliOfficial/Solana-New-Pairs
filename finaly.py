@@ -165,28 +165,28 @@ def advanced_filter_solana_tokens():
     print(f"Found {len(solana_profiles)} Solana token profiles.")
 
     valid_tokens = []
-    
+
     for profile in solana_profiles:
         token_address = profile.get("tokenAddress", "")
         if not token_address:
             continue
-        
+
         pairs = fetch_pairs_for_token(token_address)
         if not pairs:
             continue
-        
+
         best_pair = max(pairs, key=lambda p: p.get("volume", {}).get("h24", 0))
-        
+
         volume_24h = best_pair.get("volume", {}).get("h24", 0)
         liquidity_usd = best_pair.get("liquidity", {}).get("usd", 0)
-        
+
         if liquidity_usd < MIN_LIQUIDITY_USD:
             continue  # fails liquidity
-        
+
         tx_count_24h = fetch_transaction_count(token_address)
         if tx_count_24h < MIN_TX_COUNT_24H:
             continue  # fails tx count
-        
+
         holder_info = fetch_holder_distribution(token_address)
         top_holders = holder_info.get("topHolders", [])
         if top_holders:
@@ -195,10 +195,10 @@ def advanced_filter_solana_tokens():
                 continue  # fails top-holder distribution
         else:
             max_holder_pct = 0
-        
+
         if REQUIRED_LIQUIDITY_LOCK and not check_liquidity_lock(token_address):
             continue  # fails liquidity lock
-        
+
         historical_data = fetch_historical_data(token_address)
         score = compute_token_score(volume_24h, liquidity_usd, tx_count_24h, max_holder_pct, historical_data)
 
@@ -211,7 +211,7 @@ def advanced_filter_solana_tokens():
                 "tx_count_24h": tx_count_24h,
                 "top_holder_pct": max_holder_pct
             })
-    
+
     # Sort final tokens by descending score
     valid_tokens.sort(key=lambda x: x["score"], reverse=True)
 
